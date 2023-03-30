@@ -10,7 +10,7 @@ require(tidyverse)
 #--------------------------------------------------Argument Description------------------------------------------#
 # acti_data: a csv file output by gt3x function with activity classification
 # gps_data: a csv file output by GPSimpute function
-# participant_id: 
+# participant_id: a string of participant ID (default: "P2E30001")
 #----------------------------------------------------------------------------------------------------------------#
 
 
