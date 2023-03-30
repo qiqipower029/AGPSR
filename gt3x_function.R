@@ -1,8 +1,7 @@
 #-------------------------------------------------Actigraph function---------------------------------------------#
 #----------------------------------------------------Jieqi Tu----------------------------------------------------#
 
-# rm(list = ls())
-# setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0209/")
+
 
 #----------------------------------------------------Dependencies------------------------------------------------#
 require(tidyverse)
@@ -13,28 +12,48 @@ require(openxlsx)
 #----------------------------------------------------------------------------------------------------------------#
 
 #--------------------------------------------------Argument Description------------------------------------------#
-# data_directory: a string of working directory
+# data_directory: a string of working directory (should be a gt3x file)
 # valid_day_criteria: minimum hours to be considered as a valid day (default: 10)
 # wake_bout: the number of consecutive minutes with positive activity counts to define wake time (default: 1)
 # sleep_bout: the number of consecutive minutes with positive activity counts to define wake time (default: 1)
 # non_wear_chunk_min: the number of inactive minutes to be considered as non-wear time (default: 45)
-# start_hour: the starting hour of a day (default: "4:00:00")
-# study_name: a string of study name (default: "Actigraph Data Analysis")
+# start_hour: the starting hour of a day (default: "04:00:00")
+# participant_id: a string of participant ID (default: "P2E30001")
 # days_include: the number of days to be included in this study (default: 21)
 #----------------------------------------------------------------------------------------------------------------#
 
 #---------------------------------------------------gt3x function------------------------------------------------#
-gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "4:00:00", study_name = "Actigraph Data Analysis", days_include = 21) {
+gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "04:00:00", participant_id = "P2E30001", days_include = 21) {
   
-  # Read in the raw dataset
+  
+  #--------------------------Read in the raw dataset-----------------------------#
   x = read_actigraphy(paste0(data_directory))
   
+  #-----------------------------Data formatting----------------------------------#
   # Summarize the data (minute level)
   daily = summarize_daily_actigraphy(x = x,calculate_ac = T, unit = "1 min")
   
   # Separate date and time into different columns
   daily$date = as.Date(daily$time)
   daily$time_GMT = format(as.POSIXct(daily$time), format = "%H:%M:%S")
+  
+  #---------------------------Activity Classification----------------------------#
+  
+  # Create a new variable to classify activity at minute level
+  daily$activity = 
+    ifelse(daily$AC <= 100, "Sedentary",
+           ifelse(daily$AC <= 929, "Low light",
+                  ifelse(daily$AC <= 1952, "High light",
+                         ifelse(daily$AC <= 3299, "Low moderate",
+                                ifelse(daily$AC <= 5724, "High moderate",
+                                       "Vigorous")))))
+  
+  # Save the activity classification result data
+  write.csv(daily, file = paste0(participant_id, "_acticity_minute.csv"))
+  
+
+  
+  #---------------------------Wake/Sleep time detection--------------------------#
   
   # Ignore time from midnight to the pre-specified start hour (default: 4:00:00)
   daily = 
@@ -165,7 +184,7 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
     }
   }
   result$inclusion = inclusion
-  write.xlsx(result, paste0(study_name, ".xlsx"))
+  write.csv(result, paste0(participant_id, "_inclusion_decision.csv"))
   
 }
 #----------------------------------------------------------------------------------------------------------------#
@@ -174,6 +193,6 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
 #---------------------------------------------------Example------------------------------------------------------#
 
 data_directory = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/0920/ActiGraph Data/P2E30001.gt3x"
-setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0209")
-gt3x_analysis(data_directory = data_directory)
+setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0330") # Can be changed to your own working directory
+gt3x_analysis(data_directory = data_directory, participant_id = "P2E30001")
 #----------------------------------------------------------------------------------------------------------------#
