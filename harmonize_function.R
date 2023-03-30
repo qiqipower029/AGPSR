@@ -1,4 +1,4 @@
-#-------------------------------------------------data_merge function--------------------------------------------#
+#-------------------------------------------------Harmonize Function---------------------------------------------#
 #------------------------------------------------------Jieqi Tu--------------------------------------------------#
 
 
@@ -14,9 +14,9 @@ require(tidyverse)
 #----------------------------------------------------------------------------------------------------------------#
 
 
-#--------------------------------------------------Data_merge functio--------------------------------------------#
+#--------------------------------------------------harmonize_function--------------------------------------------#
 
-data_merge = function(acti_data, gps_data, participant_id = "P2E30001") {
+harmonize_function = function(acti_data, gps_data, participant_id = "P2E30001") {
   
   #-----------------------------Data formatting----------------------------------#
   gps_data$`UTC TIME` = paste(gps_data$`UTC.DATE`, gps_data$`UTC.TIME`)
@@ -42,5 +42,5 @@ wd = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0330"
 setwd(wd) # It can be changed to your own working directory
 gps_data = read.csv("./P2E30001_cleaned.csv")
 acti_data = read.csv("./P2E30001_acticity_minute.csv")
-data_merge(acti_data, gps_data, participant_id = "P2E30001")
+harmonize_function(acti_data, gps_data, participant_id = "P2E30001")
 #----------------------------------------------------------------------------------------------------------------#

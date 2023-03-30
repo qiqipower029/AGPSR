@@ -3,6 +3,8 @@
 
 
 
+
+
 #----------------------------------------------------Dependencies------------------------------------------------#
 require(tidyverse)
 require(SummarizedActigraphy)
@@ -23,7 +25,7 @@ require(openxlsx)
 #----------------------------------------------------------------------------------------------------------------#
 
 #---------------------------------------------------gt3x function------------------------------------------------#
-gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "04:00:00", participant_id = "P2E30001", days_include = 21) {
+gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "04:00:00", participant_id = "P2E30001", days_include = 21) {
   
   
   #--------------------------Read in the raw dataset-----------------------------#
@@ -48,8 +50,12 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
                                 ifelse(daily$AC <= 5724, "High moderate",
                                        "Vigorous")))))
   
+  # Only keep time, AC and activity classification to the output file
+  daily_ac_minute = 
+    daily %>% select(time, date, time_GMT, AC, activity)
+  
   # Save the activity classification result data
-  write.csv(daily, file = paste0(participant_id, "_acticity_minute.csv"))
+  write.csv(daily_ac_minute, file = paste0(participant_id, "_acticity_minute.csv"))
   
 
   
@@ -194,5 +200,5 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
 
 data_directory = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/0920/ActiGraph Data/P2E30001.gt3x"
 setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0330") # Can be changed to your own working directory
-gt3x_analysis(data_directory = data_directory, participant_id = "P2E30001")
+gt3x_function(data_directory = data_directory, participant_id = "P2E30001")
 #----------------------------------------------------------------------------------------------------------------#
