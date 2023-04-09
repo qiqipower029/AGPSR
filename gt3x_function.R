@@ -23,7 +23,7 @@ require(openxlsx)
 #----------------------------------------------------------------------------------------------------------------#
 
 #---------------------------------------------------gt3x function------------------------------------------------#
-gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "04:00:00", participant_id = "P2E30001", days_include = 21) {
+gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1, sleep_bout = 1, non_wear_chunk_min = 45, start_hour = "04:00:00", participant_id = "P2E30001", days_include = 21) {
   
   
   #--------------------------Read in the raw dataset-----------------------------#
@@ -39,13 +39,15 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
   
   #---------------------------Activity Classification----------------------------#
   
+  dailynew = daily
+  
   # Create a new variable to classify activity at minute level
-  daily$activity = 
-    ifelse(daily$AC <= 100, "Sedentary",
-           ifelse(daily$AC <= 929, "Low light",
-                  ifelse(daily$AC <= 1952, "High light",
-                         ifelse(daily$AC <= 3299, "Low moderate",
-                                ifelse(daily$AC <= 5724, "High moderate",
+  dailynew$activity = 
+    ifelse(dailynew$AC <= 100, "Sedentary",
+           ifelse(dailynew$AC <= 929, "Low light",
+                  ifelse(dailynew$AC <= 1952, "High light",
+                         ifelse(dailynew$AC <= 3299, "Low moderate",
+                                ifelse(dailynew$AC <= 5724, "High moderate",
                                        "Vigorous")))))
 
   
@@ -112,8 +114,8 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
     }
     
     # Set activity categorie as "Non-wear" before wake time and after bed time
-    daily$activity[daily$date == j] = ifelse(daily$time_GMT[daily$date == j] < waketime, "Non-wear",
-                                             ifelse(daily$time_GMT[daily$date == j] > sleeptime, "Non-wear", daily$activity[daily$date == j]))
+    dailynew$activity[dailynew$date == j] = ifelse(dailynew$time_GMT[dailynew$date == j] < waketime, "Non-wear",
+                                             ifelse(dailynew$time_GMT[dailynew$date == j] > sleeptime, "Non-wear", dailynew$activity[dailynew$date == j]))
     
     # Detect big chunks of non-wear times (starting from wake time)
     daily_waking = 
@@ -150,7 +152,7 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
           nonwear_hour = nonwear_hour + non_wear_chunk_min/60
           
           # Set the activity category as "Non-wear"
-          daily$activity[daily$date == j & daily$time_GMT >= time_checkpoints[[k]] & daily$time_GMT < time_checkpoints[[k+1]]] = "Non-wear"
+          dailynew$activity[dailynew$date == j & dailynew$time_GMT >= time_checkpoints[[k]] & dailynew$time_GMT < time_checkpoints[[k+1]]] = "Non-wear"
         }
       }
     }
@@ -191,11 +193,11 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
   # Save the inclusion decision result data
   write.csv(result, paste0(participant_id, "_inclusion_decision.csv"))
   
-  daily = daily %>% 
+  dailynew = dailynew %>% 
     select(time, date, time_GMT, AC, activity)
   
   # Save the activity classification result data
-  write.csv(daily, file = paste0(participant_id, "_acticity_minute.csv"))
+  write.csv(dailynew, file = paste0(participant_id, "_acticity_minute.csv"))
 }
 #----------------------------------------------------------------------------------------------------------------#
 
@@ -203,6 +205,6 @@ gt3x_analysis = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
 #---------------------------------------------------Example------------------------------------------------------#
 
 data_directory = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/0920/ActiGraph Data/P2E30001.gt3x"
-setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0330") # Can be changed to your own working directory
-gt3x_analysis(data_directory = data_directory, participant_id = "P2E30001")
+setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0325/") # Can be changed to your own working directory
+gt3x_function(data_directory = data_directory, participant_id = "P2E30001")
 #----------------------------------------------------------------------------------------------------------------#
