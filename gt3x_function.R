@@ -170,11 +170,13 @@ gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
   inclusion[1] = "Exclude"
   if (nrow(result) > days_include) {
     for (i in 2:days_include) {
-      if(result$wear_time[i] >= valid_day_criteria) {
-        inclusion[i] = "Include"
-      } else {
-        inclusion[i] = "Exclude"
-      }
+      if(!is.na(result$wear_time[i])) {
+        if(result$wear_time[i] >= valid_day_criteria) {
+          inclusion[i] = "Include"
+        } else {
+          inclusion[i] = "Exclude"
+        }
+      } else {inclusion[i] = "Exclude"}
     }
     for (i in (days_include + 1):nrow(result)) {
       inclusion[i] = "Exclude"
@@ -204,7 +206,7 @@ gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
 
 #---------------------------------------------------Example------------------------------------------------------#
 
-data_directory = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/0920/ActiGraph Data/P2E30001.gt3x"
-setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0325/") # Can be changed to your own working directory
-gt3x_function(data_directory = data_directory, participant_id = "P2E30001")
+data_directory = "/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/0920/ActiGraph Data/P2E30021.gt3x"
+setwd("/Users/jieqi/Library/CloudStorage/Box-Box/E3 study/Analysis/2023/0417/") # Can be changed to your own working directory
+gt3x_function(data_directory = data_directory, participant_id = "P2E30021")
 #----------------------------------------------------------------------------------------------------------------#
