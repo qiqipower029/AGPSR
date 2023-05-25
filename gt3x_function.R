@@ -114,8 +114,12 @@ gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
     }
     
     # Set activity categorie as "Non-wear" before wake time and after bed time
-    dailynew$activity[dailynew$date == j] = ifelse(dailynew$time_GMT[dailynew$date == j] < waketime, "Non-wear",
-                                             ifelse(dailynew$time_GMT[dailynew$date == j] > sleeptime, "Non-wear", dailynew$activity[dailynew$date == j]))
+    if(is.na(waketime)) {
+      dailynew$activity[dailynew$date == j] = "Non-wear"
+    } else {
+      dailynew$activity[dailynew$date == j] = ifelse(dailynew$time_GMT[dailynew$date == j] < waketime, "Non-wear",
+                                                     ifelse(dailynew$time_GMT[dailynew$date == j] > sleeptime, "Non-wear", dailynew$activity[dailynew$date == j]))
+    }
     
     # Detect big chunks of non-wear times (starting from wake time)
     daily_waking = 
