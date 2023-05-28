@@ -187,11 +187,13 @@ gt3x_function = function(data_directory, valid_day_criteria = 10, wake_bout = 1,
     }
   } else {
     for (i in 2:nrow(result)) {
-      if(result$wear_time[i] >= valid_day_criteria) {
+      if(!is.na(result$wear_time[i])){
+        if(result$wear_time[i] >= valid_day_criteria) {
         inclusion[i] = "Include"
-      } else {
+        } else {
         inclusion[i] = "Exclude"
-      }
+        }
+      } else {inclusion[i] = "Exclude"}
     }
   }
   result$inclusion = inclusion
