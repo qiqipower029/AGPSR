@@ -18,6 +18,9 @@ require(tidyverse)
 
 harmonize_function = function(acti_data, gps_data, participant_id = "P2E30001") {
   
+  acti_data = read.csv(acti_data)
+  gps_data = read.csv(gps_data)
+  
   #-----------------------------Data formatting----------------------------------#
   gps_data$`UTC TIME` = paste(gps_data$`UTC.DATE`, gps_data$`UTC.TIME`)
   gps_data$`UTC TIME` = ifelse(gps_data$`UTC TIME` == "NA NA", NA, 
